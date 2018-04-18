@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+  <style>
+    .content {
+      position: relative;
+
+    }
+
+    .item {
+      position: absolute;
+      width: 200px;
+      margin-right: 10px;
+      margin-top: 10px;
+      transition: all 1s;
+    }
+
+    .h1 {
+      height: 200px;
+      background-color: #f4b300;
+    }
+
+    .h2 {
+      height: 300px;
+      background-color: #691BB8;
+    }
+
+    .h3 {
+      height: 400px;
+      background-color: #006ac1;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="content">
+    <div class="item h1">1</div>
+    <div class="item h3">2</div>
+    <div class="item h2">3</div>
+    <div class="item h1">4</div>
+    <div class="item h1">5</div>
+    <div class="item h3">6</div>
+    <div class="item h3">7</div>
+    <div class="item h2">8</div>
+    <div class="item h1">9</div>
+    <div class="item h3">10</div>
+    <div class="item h3">11</div>
+    <div class="item h3">12</div>
+    <div class="item h2">13</div>
+    <div class="item h2">14</div>
+  </div>
+
+  <script>
+    var waterfall = (function() {
+      function init() {
+        waterfall()
+        $(window).on("resize", function() {
+          waterfall()
+        })
+      }
+
+      // function test(num) {
+      //   console.log(num)
+      // }
+
+      function waterfall() {
+        var column = parseInt($(".content").width() / $(".item").outerWidth(true))
+        var arr = []
+        for (let i = 0; i < column; i++) {
+          arr[i] = 0
+        }
+        $(".item").each(function() {
+          var minValue = Math.min.apply(null, arr)
+          var minIndex = arr.indexOf(minValue)
+
+          $(this).css({
+            top: minValue,
+            left: minIndex * $(this).outerWidth(true)
+          })
+
+          arr[minIndex] += $(this).outerHeight(true)
+        })
+      }
+      return {
+        init: init,
+        // test: test
+      }
+    })()
+  </script>
+</body>
+
+</html>
