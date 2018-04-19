@@ -34,6 +34,7 @@
       border: 1px solid #999;
       padding: 10px;
       padding-bottom: 0;
+      opacity: 0;
     }
 
     .item a {
@@ -66,7 +67,7 @@
 
     #load {
       margin-bottom: 30px;
-      visibility: none;
+      visibility: hidden;
     }
   </style>
 </head>
@@ -103,6 +104,12 @@
       if (isVisible($("#load"))) {
         getData(appendData)
       }
+    })
+
+    $(window).on("resize", function() {
+      $(".item").each(function() {
+        waterfall($(this))
+      })
     })
 
     function appendData(newsList) {
