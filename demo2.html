@@ -20,16 +20,25 @@
       clear: both;
     }
 
+    .container {
+      position: relative;
+    }
+
     .item {
       list-style: none;
       height: 300px;
       width: 300px;
-      position: relative;
+      position: absolute;
       margin-top: 20px;
       margin-left: 20px;
-      border: 1px solid;
+      border: 1px solid #999;
       padding: 10px;
       padding-bottom: 0;
+    }
+
+    .item a {
+      text-decoration: none;
+      color: #000;
     }
 
     .item img {
@@ -39,7 +48,7 @@
     .content h3 {
       margin-top: 10px;
       padding-bottom: 5px;
-      border-bottom: 1px solid #999;
+      font-size: 14px;
     }
 
     .content>p {
@@ -48,47 +57,65 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      font-size: 14px;
+    }
+
+    .hide {
+      display: none;
+    }
+
+    #load {
+      margin-bottom: 30px;
+      visibility: none;
     }
   </style>
 </head>
 
 <body>
   <div>
-    <ul class="container">
+    <ul class="container clearfix">
       <!-- <li class="item">
         <a href="#">
         <img src="https://images.unsplash.com/photo-1503640538573-148065ba4904?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=07c73b2d07218491dacf8511f3ee79e3&auto=format&fit=crop&w=1050&q=80" alt="">
+          <div class="content">
+            <h3>header</h3>
+            <p>paragraph</p>
+          </div>
         </a>
-        <div class="content">
-          <h3>header</h3>
-          <p>paragraph</p>
-        </div>
       </li> -->
+      <li class="item hide"></li>
     </ul>
+    <div id="load"></div>
   </div>
   <script>
+    var currentPage = 1
+    var newsLength = 10
+    var colHeight = []
+    var nodeWidth = $(".hide").outerWidth(true)
+    var column = parseInt($(".container").width() / nodeWidth)
+    for (let i = 0; i < column; i++) {
+      colHeight[i] = 0
+    }
+
     getData(appendData)
 
-    // $(window).on("scroll", function() {
-    //   if (isVisible($(".load"))) {
-    //     getData(appendData)
-    //   }
-    // })
+    $(window).on("scroll", function() {
+      if (isVisible($("#load"))) {
+        getData(appendData)
+      }
+    })
 
     function appendData(newsList) {
       $.each(newsList, function(index, news) {
         var $node = getNode(news)
         $node.find("img").on("load", function() {
-          console.log($node)
           $(".container").append($node)
-          console.log($node, "loaded...")
+          waterfall($node)
         })
       })
     }
 
     function getData(callback) {
-      var currentPage = 0
-      var newsLength = 10
       $.ajax({
         url: "http://platform.sina.com.cn/slide/album_tech",
         dataType: "jsonp",
@@ -99,8 +126,14 @@
           page: currentPage
         }
       }).done(function(ret) {
-        callback(ret)
-        currentPage++
+        if (ret && ret.status && ret.status.code === "0") {
+          callback(ret.data)
+          currentPage++
+        } else {
+          console.log("get data error")
+        }
+      }).fail(function() {
+        console.log("fail")
       })
     }
 
@@ -109,12 +142,35 @@
       html += "<li class='item'>"
       html += "<a href='" + news.url + "'>"
       html += "<img src='" + news.img_url + "'>"
-      html += "</a>"
       html += "<div class='content'>"
-      html += "<h3>" + news.short_name + "</h3>"
+      html += "<h3>" + news.name + "</h3>"
       html += "<p>" + news.short_intro + "</p>"
-      html += "</div></li>"
+      html += "</div></a></li>"
       return $(html)
+    }
+
+    function waterfall($node) {
+      var minHeight = Math.min.apply(null, colHeight)
+      var index = colHeight.indexOf(minHeight)
+
+      $node.css({
+        left: nodeWidth * index,
+        top: minHeight,
+        opacity: 1
+      })
+
+      colHeight[index] += $node.outerHeight(true)
+      $(".container").height(Math.max.apply(null, colHeight))
+    }
+
+    function isVisible($node) {
+      var scrollTop = $(window).scrollTop()
+      var windowHeight = $(window).height()
+      var top = $node.offset().top
+      if (scrollTop + windowHeight > top) {
+        return true
+      }
+      return false
     }
   </script>
 
