@@ -26,7 +26,6 @@
 
     .item {
       list-style: none;
-      height: 300px;
       width: 300px;
       position: absolute;
       margin-top: 20px;
@@ -53,7 +52,7 @@
     }
 
     .content>p {
-      margin-top: 10px;
+      margin: 15px 0;
       color: #555;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -89,6 +88,9 @@
     <div id="load"></div>
   </div>
   <script>
+    var isSending = false
+    var scrollClock
+    var resizeClock
     var currentPage = 1
     var newsLength = 10
     var colHeight = []
@@ -98,19 +100,28 @@
       colHeight[i] = 0
     }
 
+
     getData(appendData)
 
     $(window).on("scroll", function() {
+      if (scrollClock) {
+        clearTimeout(scrollClock)
+      }
       if (isVisible($("#load"))) {
-        getData(appendData)
+        scrollClock = setTimeout(function() {
+          getData(appendData)
+        }, 100)
       }
     })
 
-    $(window).on("resize", function() {
-      $(".item").each(function() {
-        waterfall($(this))
-      })
-    })
+    // $(window).on("resize", function() {
+    //   if (resizeClock) {
+    //     clearTimeout(resizeClock)
+    //   }
+    //   resizeClock = setTimeout(function() {
+    //     rerender()
+    //   }, 100)
+    // })
 
     function appendData(newsList) {
       $.each(newsList, function(index, news) {
@@ -123,6 +134,10 @@
     }
 
     function getData(callback) {
+      if (isSending) {
+        return
+      }
+      isSending = true
       $.ajax({
         url: "http://platform.sina.com.cn/slide/album_tech",
         dataType: "jsonp",
@@ -139,6 +154,7 @@
         } else {
           console.log("get data error")
         }
+        isSending = false
       }).fail(function() {
         console.log("fail")
       })
@@ -167,7 +183,8 @@
       })
 
       colHeight[index] += $node.outerHeight(true)
-      $(".container").height(Math.max.apply(null, colHeight))
+      var maxHeight = Math.max.apply(null, colHeight)
+      $(".container").height(maxHeight)
     }
 
     function isVisible($node) {
@@ -179,6 +196,28 @@
       }
       return false
     }
+
+    // function rerender() {
+    //   var newColumn = parseInt($(".container").width() / nodeWidth)
+    //   var newColHeight = []
+    //   for (let i = 0; i < newColumn; i++) {
+    //     newColHeight[i] = 0
+    //   }
+    //   $(".item").each(function() {
+    //     var minHeight = Math.min.apply(null, colHeight)
+    //     var index = colHeight.indexOf(minHeight)
+    //
+    //     $(this).css({
+    //       left: nodeWidth * index,
+    //       top: minHeight,
+    //       opacity: 1
+    //     })
+    //
+    //     newColHeight[index] += $(this).outerHeight(true)
+    //   })
+    //   colHeight = newColHeight
+    //   column = newColumn
+    // }
   </script>
 
 </body>
