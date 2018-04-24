@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
   <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
   <title>Document</title>
   <style>
@@ -126,15 +127,6 @@
       }
     })
 
-    // $(window).on("resize", function() {
-    //   if (resizeClock) {
-    //     clearTimeout(resizeClock)
-    //   }
-    //   resizeClock = setTimeout(function() {
-    //     rerender()
-    //   }, 100)
-    // })
-
     function appendData(newsList) {
       $.each(newsList, function(index, news) {
         var $node = getNode(news)
@@ -208,28 +200,6 @@
       }
       return false
     }
-
-    // function rerender() {
-    //   var newColumn = parseInt($(".container").width() / nodeWidth)
-    //   var newColHeight = []
-    //   for (let i = 0; i < newColumn; i++) {
-    //     newColHeight[i] = 0
-    //   }
-    //   $(".item").each(function() {
-    //     var minHeight = Math.min.apply(null, colHeight)
-    //     var index = colHeight.indexOf(minHeight)
-    //
-    //     $(this).css({
-    //       left: nodeWidth * index,
-    //       top: minHeight,
-    //       opacity: 1
-    //     })
-    //
-    //     newColHeight[index] += $(this).outerHeight(true)
-    //   })
-    //   colHeight = newColHeight
-    //   column = newColumn
-    // }
 
     function GoTop(ct) {
       this.ct = ct
