@@ -68,6 +68,18 @@
       margin-bottom: 30px;
       visibility: hidden;
     }
+
+    #backtop {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      padding: 5px;
+      background-color: #fff;
+      font-size: 16px;
+      line-height: 16px;
+      cursor: pointer;
+      z-index: 1000;
+    }
   </style>
 </head>
 
@@ -218,6 +230,33 @@
     //   colHeight = newColHeight
     //   column = newColumn
     // }
+
+    function GoTop(ct) {
+      this.ct = ct
+      this.target = $("<button id='backtop'>back to top</button>")
+      this.createNode()
+      this.bindEvent()
+    }
+
+    GoTop.prototype.bindEvent = function() {
+      this.target.on("click", function() {
+        $(window).scrollTop(0)
+      })
+    }
+
+    GoTop.prototype.createNode = function() {
+      var _this = this
+      _this.ct.append(this.target)
+      _this.target.hide()
+      $(window).on("scroll", function() {
+        if ($(window).scrollTop() > 300) {
+          _this.target.show(500)
+        } else {
+          _this.target.hide(500)
+        }
+      })
+    }
+    new GoTop($(".container"))
   </script>
 
 </body>
